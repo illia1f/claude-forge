@@ -1,0 +1,31 @@
+{
+  "name": "claude-forge",
+  "owner": {
+    "name": "illia1f"
+  },
+  "metadata": {
+    "description": "Collection of handy plugins for Claude Code",
+    "version": "1.0.0",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "ideation",
+      "source": "./plugins/ideation",
+      "description": "Multi-agent codebase ideation framework. Analyzes projects for improvements across security, UI/UX, performance, code quality, documentation, and code patterns.",
+      "version": "1.0.0",
+      "author": {
+        "name": "illia1f"
+      },
+      "keywords": [
+        "ideation",
+        "code-analysis",
+        "security",
+        "performance",
+        "code-quality"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/illia1f/claude-forge"
+    }
+  ]
+}

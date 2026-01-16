@@ -1,0 +1,16 @@
+{
+  "name": "ideation",
+  "version": "1.0.0",
+  "description": "Multi-agent codebase ideation framework. Analyzes projects for improvements across security, UI/UX, performance, code quality, documentation, and code patterns.",
+  "author": {
+    "name": "illia1f"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ideation",
+    "code-analysis",
+    "security",
+    "performance",
+    "code-quality"
+  ]
+}
