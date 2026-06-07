@@ -1,4 +1,5 @@
 ---
+name: docs
 description: Run documentation analysis to identify missing, outdated, or unclear documentation
 ---
 

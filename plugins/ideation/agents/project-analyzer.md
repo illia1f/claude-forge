@@ -1,6 +1,6 @@
 ---
+name: project-analyzer
 description: Analyzes project structure, tech stack, and patterns to provide context for ideation agents
-capabilities: ["project-analysis", "tech-stack-detection", "pattern-discovery"]
 ---
 
 # Project Analyzer Agent

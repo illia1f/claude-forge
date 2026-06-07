@@ -1,4 +1,5 @@
 ---
+name: improvements
 description: Run code improvements analysis to discover feature opportunities by analyzing existing patterns and architecture
 ---
 

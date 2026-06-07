@@ -1,6 +1,6 @@
 ---
+name: security-ideator
 description: Security hardening ideation agent - identifies vulnerabilities, risks, and security improvement opportunities
-capabilities: ["security-analysis", "vulnerability-detection", "hardening-recommendations"]
 ---
 
 # Security Hardening Ideation Agent

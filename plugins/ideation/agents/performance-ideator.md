@@ -1,6 +1,6 @@
 ---
+name: performance-ideator
 description: Performance ideation agent - identifies optimization opportunities for speed, memory, and efficiency
-capabilities: ["performance-analysis", "optimization-discovery", "bottleneck-detection"]
 ---
 
 # Performance Ideation Agent

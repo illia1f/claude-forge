@@ -1,4 +1,5 @@
 ---
+name: security
 description: Run security hardening analysis to identify vulnerabilities, risks, and security improvement opportunities
 ---
 
