@@ -2,10 +2,10 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "git-commands",
   "version": "1.0.0",
-  "description": "Git workflow skills. Create commits following project rules or Conventional Commits, with safety gates for secrets, protected branches, and abnormal git state.",
+  "description": "Git workflow skills: create commits following project rules or Conventional Commits, generate PR descriptions, and clean up gone branches and their worktrees — with safety gates throughout.",
   "author": {
     "name": "illia1f"
   },
   "license": "MIT",
-  "keywords": ["git", "commit", "conventional-commits", "workflow"]
+  "keywords": ["git", "commit", "conventional-commits", "pull-request", "worktree", "workflow"]
 }
