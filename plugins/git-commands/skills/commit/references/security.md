@@ -1,7 +1,5 @@
 # Secret Detection Protocol
 
-Loaded when a candidate file or diff line matches the suspicion patterns in SKILL.md Phase 3, gate 5.
-
 ## Filename patterns (case-insensitive)
 
 - `.env`, `.env.*` — except `.env.example`, `.env.template`, `.env.sample` containing only placeholder values

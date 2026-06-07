@@ -1,7 +1,5 @@
 # Grouping Heuristics
 
-Loaded when Phase 4 suspects the candidate changes span unrelated work.
-
 ## Detection signals
 
 Treat changes as potentially unrelated when **two or more** of these fire:
@@ -16,17 +14,19 @@ One logical change touching many files (a rename, an API change rippling through
 ## Building the split plan
 
 1. Group files by cause: what single change explains this set?
-2. Order groups by dependency: a fix the feature relies on commits before the feature.
-3. Draft per group: file list + commit message in the Phase 2 convention.
+2. Prefer fewer, larger groups: a group earns its own commit only if it could be reverted or cherry-picked independently **and** its message says something the other groups' messages don't. When in doubt, fold the group into its nearest relative.
+3. Merge groups of the same nature: several unrelated docs tweaks become one `docs:` commit, several config touches one `chore:` commit — even when the files don't reference each other.
+4. Order groups by dependency: a fix the feature relies on commits before the feature.
+5. Draft per group: file list + commit message in the Phase 2 convention. Two to four groups is the normal outcome; more than five suggests over-splitting.
 
 ## Presenting the plan
 
 Show a table and ask:
 
-| # | Commit message | Files |
-|---|---|---|
-| 1 | fix(auth): handle expired session tokens | src/auth/middleware.ts, src/auth/session.ts |
-| 2 | docs: fix README typos | README.md |
+| #   | Commit message                           | Files                                       |
+| --- | ---------------------------------------- | ------------------------------------------- |
+| 1   | fix(auth): handle expired session tokens | src/auth/middleware.ts, src/auth/session.ts |
+| 2   | docs: fix README typos                   | README.md                                   |
 
 Options: approve the split, edit the groups, or collapse to a single commit. The user decides — never split silently.
 

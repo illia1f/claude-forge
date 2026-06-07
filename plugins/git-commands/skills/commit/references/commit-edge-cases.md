@@ -1,7 +1,5 @@
 # Commit Edge Cases
 
-Loaded when git state is abnormal (Phase 3, gates 2–3) or hooks misbehave (Phase 5).
-
 ## Mid-merge (`.git/MERGE_HEAD` exists)
 
 Do not create a normal commit. Tell the user they are mid-merge. Options: resolve conflicts, then `git commit` completes the merge (keep the default merge message); or `git merge --abort`.

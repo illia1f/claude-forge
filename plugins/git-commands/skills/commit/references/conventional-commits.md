@@ -1,7 +1,5 @@
 # Conventional Commits (fallback format)
 
-Loaded when Phase 2 finds no project commit convention.
-
 ## Format
 
 ```
@@ -16,19 +14,19 @@ Subject line is mandatory; body and footer only when needed.
 
 ## Types
 
-| Type | Use for |
-|---|---|
-| feat | new user-facing capability |
-| fix | bug fix |
-| docs | documentation only |
-| refactor | code restructuring, no behavior change |
-| perf | performance improvement |
-| test | adding or fixing tests |
-| build | build system or dependency changes |
-| ci | CI configuration |
-| chore | maintenance not covered above |
-| style | formatting only (what a formatter would change), no logic change |
-| revert | reverting a previous commit — body identifies it: `This reverts commit <hash>.` |
+| Type     | Use for                                                                         |
+| -------- | ------------------------------------------------------------------------------- |
+| feat     | new user-facing capability                                                      |
+| fix      | bug fix                                                                         |
+| docs     | documentation only                                                              |
+| refactor | code restructuring, no behavior change                                          |
+| perf     | performance improvement                                                         |
+| test     | adding or fixing tests                                                          |
+| build    | build system or dependency changes                                              |
+| ci       | CI configuration                                                                |
+| chore    | maintenance not covered above                                                   |
+| style    | formatting only (what a formatter would change), no logic change                |
+| revert   | reverting a previous commit — body identifies it: `This reverts commit <hash>.` |
 
 ## Rules
 
