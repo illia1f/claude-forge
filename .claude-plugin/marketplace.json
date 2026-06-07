@@ -26,6 +26,23 @@
       ],
       "license": "MIT",
       "repository": "https://github.com/illia1f/claude-forge"
+    },
+    {
+      "name": "git-commands",
+      "source": "./plugins/git-commands",
+      "description": "Git workflow skills. Create commits following project rules or Conventional Commits, with safety gates for secrets, protected branches, and abnormal git state.",
+      "version": "1.0.0",
+      "author": {
+        "name": "illia1f"
+      },
+      "keywords": [
+        "git",
+        "commit",
+        "conventional-commits",
+        "workflow"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/illia1f/claude-forge"
     }
   ]
 }
