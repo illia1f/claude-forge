@@ -1,6 +1,6 @@
 ---
+name: ideation-orchestrator
 description: Orchestrates multi-agent ideation by running all analysis types in parallel and merging results
-capabilities: ["orchestration", "parallel-execution", "result-merging"]
 ---
 
 # Ideation Orchestrator Agent

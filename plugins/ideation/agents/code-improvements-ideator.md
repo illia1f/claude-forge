@@ -1,6 +1,6 @@
 ---
+name: code-improvements-ideator
 description: Code improvements ideation agent - discovers feature opportunities by analyzing existing patterns and architecture
-capabilities: ["pattern-discovery", "feature-ideation", "architecture-analysis"]
 ---
 
 # Code Improvements Ideation Agent

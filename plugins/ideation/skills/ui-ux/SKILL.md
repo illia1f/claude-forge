@@ -1,4 +1,5 @@
 ---
+name: ui-ux
 description: Run UI/UX analysis to identify usability issues, accessibility gaps, and visual improvements
 ---
 

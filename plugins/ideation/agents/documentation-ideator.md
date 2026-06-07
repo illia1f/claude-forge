@@ -1,6 +1,6 @@
 ---
+name: documentation-ideator
 description: Documentation ideation agent - identifies missing, outdated, or unclear documentation
-capabilities: ["documentation-review", "gap-analysis", "clarity-assessment"]
 ---
 
 # Documentation Ideation Agent

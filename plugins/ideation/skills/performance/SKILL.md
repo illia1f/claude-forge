@@ -1,4 +1,5 @@
 ---
+name: performance
 description: Run performance analysis to identify optimization opportunities for speed, memory, and efficiency
 ---
 

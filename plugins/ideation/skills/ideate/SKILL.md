@@ -1,5 +1,7 @@
 ---
+name: ideate
 description: Run comprehensive codebase ideation across all analysis types (security, UI/UX, performance, code quality, documentation, code improvements)
+disable-model-invocation: true
 ---
 
 # Comprehensive Ideation Command
@@ -30,6 +32,7 @@ Run a complete ideation analysis of the current project. This command orchestrat
 When the user runs this command:
 
 1. First, check if a project index exists:
+
    ```bash
    cat .claude/ideation/project_index.json 2>/dev/null
    ```
@@ -37,6 +40,7 @@ When the user runs this command:
    If not, run the `ideation:project-analyzer` agent first to create it.
 
 2. Initialize the output directory:
+
    ```bash
    mkdir -p .claude/ideation
    ```
@@ -50,6 +54,7 @@ When the user runs this command:
    - `ideation:code-improvements-ideator`
 
 4. After all agents complete, read and summarize results:
+
    ```bash
    cat .claude/ideation.json
    ```
@@ -83,6 +88,7 @@ All findings are saved to `.claude/ideation.json` with this structure:
 ## Individual Commands
 
 To run a specific analysis type instead of all:
+
 - `/ideation:security` - Security analysis only
 - `/ideation:ui-ux` - UI/UX analysis only
 - `/ideation:performance` - Performance analysis only

@@ -1,6 +1,6 @@
 ---
+name: ui-ux-ideator
 description: UI/UX ideation agent - analyzes user interfaces for usability, accessibility, and visual improvements
-capabilities: ["ui-analysis", "ux-review", "accessibility-audit", "visual-design"]
 ---
 
 # UI/UX Ideation Agent

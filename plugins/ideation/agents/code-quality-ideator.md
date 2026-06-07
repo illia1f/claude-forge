@@ -1,6 +1,6 @@
 ---
+name: code-quality-ideator
 description: Code quality ideation agent - identifies code smells, complexity issues, and maintainability improvements
-capabilities: ["code-analysis", "smell-detection", "refactoring-suggestions", "maintainability-review"]
 ---
 
 # Code Quality Ideation Agent

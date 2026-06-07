@@ -1,4 +1,5 @@
 ---
+name: code-quality
 description: Run code quality analysis to identify code smells, complexity issues, and maintainability improvements
 ---
 
