@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "ideation",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Multi-agent codebase ideation framework. Analyzes projects for improvements across security, UI/UX, performance, code quality, documentation, and code patterns.",
   "author": {
     "name": "illia1f"

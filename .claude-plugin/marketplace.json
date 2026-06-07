@@ -13,7 +13,7 @@
       "name": "ideation",
       "source": "./plugins/ideation",
       "description": "Multi-agent codebase ideation framework. Analyzes projects for improvements across security, UI/UX, performance, code quality, documentation, and code patterns.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "illia1f"
       },
