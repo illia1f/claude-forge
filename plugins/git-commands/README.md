@@ -15,10 +15,24 @@ Create a git commit from current changes.
 - Offers to split unrelated changes into separate commits
 - Handles hook formatters, abnormal git states (merge, rebase, cherry-pick, bisect, detached HEAD), and missing git identity
 
-## Roadmap
+### /gen-pr
 
-- `gen-pr` — generate PR title and description following project rules
-- `clean-up` — remove branches marked [gone] and their worktrees
+Generate a pull request title and description from the commits on the current branch.
+
+- Auto-detects the base branch (`origin/HEAD`, falling back to `main`/`master`)
+- Follows the project PR template (`.github/PULL_REQUEST_TEMPLATE`, CONTRIBUTING.md, CLAUDE.md); falls back to a best-practice structure
+- Drafts from the diff **and** the conversation context (the "why")
+- Prints the markdown to the screen and offers to save it to a `.md` file
+- Does not open the PR — it produces the text only
+
+### /clean-up
+
+Remove local branches marked `[gone]` (their upstream was deleted on the remote) and any worktrees attached to them.
+
+- Shows a single deletion plan and asks for one confirmation
+- Removes attached worktrees first, then deletes the branches
+- Skips the current branch, `main`/`master`, and branches with unmerged commits (reported for explicit opt-in)
+- Never force-deletes branches or discards dirty worktrees
 
 ## Installation
 
