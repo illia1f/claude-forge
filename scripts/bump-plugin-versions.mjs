@@ -53,6 +53,27 @@ if (EMPTY_SHA.test(base)) {
   base = resolveCommit(base) ?? fail(`baseRef does not resolve to a commit: ${base}`);
 }
 
+// Version recorded at the base ref, or null when the plugin is new in this range.
+// stderr ignored: a miss prints "fatal: path ... does not exist", which is the
+// expected answer for a new plugin, not an error worth showing.
+const versionAtBase = (name) => {
+  let raw;
+  try {
+    raw = execFileSync(
+      "git",
+      ["show", `${base}:plugins/${name}/.claude-plugin/plugin.json`],
+      { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }
+    );
+  } catch {
+    return null;
+  }
+  try {
+    return JSON.parse(raw).version ?? "0.0.0";
+  } catch (err) {
+    fail(`cannot parse ${name} manifest at ${base}: ${err.message}`);
+  }
+};
+
 // Which plugins changed? Derived from paths — new plugins are picked up automatically.
 // -z gives NUL-separated, unquoted paths, so non-ASCII plugin names survive the filter.
 const changedPlugins = [
@@ -120,6 +141,24 @@ for (const name of changedPlugins) {
   const current = manifest.version ?? "0.0.0";
   if (!SEMVER.test(current)) {
     fail(`${manifestPath}: version "${current}" is not plain MAJOR.MINOR.PATCH`);
+  }
+
+  // A human-set version wins. New plugins keep their authored version (creation
+  // commits would bump a version nobody installed); a version field edited in this
+  // range (manual bump, revert of a bad bump) is a deliberate choice — don't re-bump.
+  const baseVersion = versionAtBase(name);
+  if (baseVersion === null) {
+    console.log(`${name}: new plugin, keeping authored version ${current}`);
+    continue;
+  }
+  if (baseVersion !== current) {
+    console.log(`${name}: version set manually ${baseVersion} -> ${current}, not bumping`);
+    const entry = marketplace.plugins?.find((p) => p.name === name);
+    if (entry && entry.version !== current) {
+      entry.version = current;
+      marketplaceTouched = true;
+    }
+    continue;
   }
 
   // %B = full message (subject + body) so BREAKING CHANGE footers are visible;
