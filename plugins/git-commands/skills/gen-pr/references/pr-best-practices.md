@@ -1,13 +1,6 @@
 # PR best-practice structure
 
-Loaded when Phase 2 finds no project PR template or convention. Use this as the fallback shape. Keep every section grounded in the actual diff and conversation — omit a section rather than padding it.
-
-## Title
-
-- One line, imperative, no trailing period.
-- If the branch's commits use Conventional Commits, match it: `type(scope): summary`.
-- Otherwise: a concise summary of the change, e.g. `Add retry logic to the upload client`.
-- Keep it under ~70 characters so it isn't truncated in lists.
+The conventional shape for a PR description. Keep every section grounded in the actual diff and conversation — omit a section rather than padding it.
 
 ## Body
 
@@ -26,6 +19,7 @@ conversation, not just the diff.
 
 - How the change was verified (commands run, manual steps, new tests).
 - If not yet tested, say so explicitly rather than implying it was.
+- If tests exist but you haven't seen them run, say the results are unverified — don't imply they passed.
 
 ## Notes
 
@@ -38,4 +32,4 @@ conversation, not just the diff.
 - **Grounded:** every claim traceable to a commit, a diff hunk, or the conversation. No invented test results or issue links.
 - **Scaled:** a one-commit PR gets a short Summary and maybe Changes; a large PR earns the full structure. Don't force empty sections.
 - **Reviewer-first:** lead with intent and impact. The diff already shows the mechanics.
-- **Placeholders are honest:** when the template needs something you can't determine (issue number, screenshot), leave a visible `<!-- TODO: ... -->` marker instead of guessing.
+- **Placeholders are honest:** when a section needs something you can't determine (issue number, screenshot), leave a visible `<!-- TODO: ... -->` marker instead of guessing.
