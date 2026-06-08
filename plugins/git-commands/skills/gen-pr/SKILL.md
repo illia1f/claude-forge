@@ -11,11 +11,13 @@ Work through the five phases in order. Load a reference only when a phase says t
 
 First resolve the base branch, then describe the branch against it.
 
-Resolve the base (first that works):
+Resolve the base once:
 ```
 git symbolic-ref --short refs/remotes/origin/HEAD   # e.g. origin/main -> main
 ```
-If that fails, fall back to `main`, then `master`, then ask the user.
+1. Strip the remote prefix → `main`.
+2. Missing? Run `git remote set-head origin --auto`, retry.
+3. Still unresolved? Fall back to `main`/`master` (whichever exists) and **state the assumed base in the output**. Don't hardcode `main` — the repo may default to `develop`/`trunk`.
 
 Then run in parallel (read-only):
 ```
@@ -39,10 +41,10 @@ First hit wins. A project template outranks generic best practice.
 
 Run in order. Each gate passes, stops with an explanation, or notes a caveat.
 
-1. **No commits vs base** — `git log <base>..HEAD` empty → nothing to describe; report and stop.
-2. **Still on base branch** — current branch equals `<base>` → warn there is no feature branch to describe; confirm the base with the user before continuing.
-3. **Detached HEAD** — `git branch --show-current` empty → load `references/pr-edge-cases.md`, explain, stop.
-4. **Uncommitted changes** — `git status --porcelain` non-empty → note in the output that those changes are not committed and won't be in the PR until committed. Don't block.
+1. **No commits vs base** — if `git log <base>..HEAD` is empty, there's nothing to describe; report and stop.
+2. **Still on base branch** — if the current branch equals `<base>`, warn there is no feature branch to describe; confirm the base with the user before continuing.
+3. **Detached HEAD** — if `git branch --show-current` is empty, load `references/pr-edge-cases.md`, explain, and stop.
+4. **Uncommitted changes** — if `git status --porcelain` is non-empty, note in the output that those changes are not committed and won't be in the PR until committed. Don't block.
 
 ## Phase 4 — Draft + display
 
@@ -52,6 +54,10 @@ Run in order. Each gate passes, stops with an explanation, or notes a caveat.
 
 ## Phase 5 — Offer save
 
-1. Ask whether to save the markdown to a file. Suggest a default of `PR_DESCRIPTION.md` at the repo root.
-2. If the user accepts, confirm the path, then write the file and report where it landed.
-3. If the user declines, stop — the markdown is already on screen.
+1. Ask via the `AskUserQuestion` tool (not free-text):
+   - **Q:** "Save this PR description to a file?"
+   - **Options:**
+     - `Save` — write to `PR_DESCRIPTION.md` at the repo root (recommended).
+     - `Don't save` — leave it on screen only.
+2. On `Save`, write the file and report where it landed (confirm the path first if the user wants a different one).
+3. On `Don't save`, stop — the markdown is already on screen.
