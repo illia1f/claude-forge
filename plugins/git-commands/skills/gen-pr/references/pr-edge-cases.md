@@ -1,6 +1,6 @@
 # gen-pr edge cases
 
-Loaded from Phase 1 (base resolution) or Phase 3 (gates) when the repository state is unusual.
+Loaded from Phase 1 (base resolution) or Phase 2 (edge gates) when the repository state is unusual.
 
 ## Base branch can't be resolved
 
