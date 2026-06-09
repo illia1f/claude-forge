@@ -1,10 +1,10 @@
 # Ideation findings — schema and merge procedure
 
-Single source of truth for the findings format. Agents write shards under `.claude/ideation/`; the invoking skill (in the main conversation) merges them into `.claude/ideation.json`. Agents never touch the merged file — parallel agents writing one file lose each other's work.
+Single source of truth for the findings format. Agents write shards under `.claude/forge/ideation/`; the invoking skill (in the main conversation) merges them into `.claude/forge/ideation/ideation.json`. Agents never touch the merged file — parallel agents writing one file lose each other's work.
 
 ## Types, prefixes, shards
 
-| Type                | ID prefix | Shard file (in `.claude/ideation/`) | Agent                       |
+| Type                | ID prefix | Shard file (in `.claude/forge/ideation/`) | Agent                       |
 | ------------------- | --------- | ----------------------------------- | --------------------------- |
 | `security`          | `sec-`    | `findings-security.json`            | `security-ideator`          |
 | `ui_ux`             | `ux-`     | `findings-ui-ux.json`               | `ui-ux-ideator`             |
@@ -54,7 +54,7 @@ Each agent writes ONLY its own shard — an object with a single `ideas` array c
 { "ideas": [] }
 ```
 
-## Merged file — `.claude/ideation.json`
+## Merged file — `.claude/forge/ideation/ideation.json`
 
 ```json
 {
@@ -71,7 +71,7 @@ Each agent writes ONLY its own shard — an object with a single `ideas` array c
 
 ## Merge procedure (run by the skill, never by agents)
 
-1. If `.claude/ideation.json` is missing or invalid JSON, initialize it as `{"ideas": [], "summary": {}, "lastUpdated": null}`.
+1. If `.claude/forge/ideation/ideation.json` is missing or invalid JSON, initialize it as `{"ideas": [], "summary": {}, "lastUpdated": null}`.
 2. For each idea in the shard: it is a **duplicate** when an existing idea has the same `type` and `title` → keep the existing entry unchanged (this preserves user-edited `status`) and discard the incoming one. Otherwise append.
 3. On append, make the ID continue from the highest existing number for that prefix (`sec-004` exists → next appended idea is `sec-005`); renumber the incoming idea on collision.
 4. Recompute `summary` from scratch: `total`, `byType`, `byEffort`, `byImpact`.

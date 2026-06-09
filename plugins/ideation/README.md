@@ -30,7 +30,7 @@ claude --plugin-dir ./plugins/ideation
 /ideation:ideate
 ```
 
-Runs the domain agents in parallel (skipping UI/UX for projects without a UI) and merges their findings into `.claude/ideation.json`.
+Runs the domain agents in parallel (skipping UI/UX for projects without a UI) and merges their findings into `.claude/forge/ideation/ideation.json`.
 
 ### Individual Analysis Commands
 
@@ -45,7 +45,7 @@ Runs the domain agents in parallel (skipping UI/UX for projects without a UI) an
 
 ## Output
 
-All findings end up in `.claude/ideation.json`. Full field reference: [skills/ideate/references/schema.md](skills/ideate/references/schema.md).
+All findings end up in `.claude/forge/ideation/ideation.json`. Full field reference: [skills/ideate/references/schema.md](skills/ideate/references/schema.md).
 
 ```json
 {
@@ -155,15 +155,15 @@ The plugin includes 7 specialized agents:
 | `documentation-ideator`     | Documentation gap analysis                         |
 | `code-improvements-ideator` | Code-revealed opportunities                        |
 
-Agents are invoked by the plugin skills, not directly. Each ideator writes its findings to its own shard file (`.claude/ideation/findings-<type>.json`) — never to the shared `.claude/ideation.json` — so parallel agents can't overwrite each other's results.
+Agents are invoked by the plugin skills, not directly. Each ideator writes its findings to its own shard file (`.claude/forge/ideation/findings-<type>.json`) — never to the shared `.claude/forge/ideation/ideation.json` — so parallel agents can't overwrite each other's results.
 
 ## How It Works
 
-1. **Project analysis**: The invoking skill ensures `.claude/ideation/project_index.json` exists (and re-runs `project-analyzer` when it's stale), so agents have project structure, tech stack, and patterns to work from.
+1. **Project analysis**: The invoking skill ensures `.claude/forge/ideation/project_index.json` exists (and re-runs `project-analyzer` when it's stale), so agents have project structure, tech stack, and patterns to work from.
 
-2. **Specialized analysis**: Each agent loads the project index and the existing `.claude/ideation.json` (to skip already-reported ideas and continue ID numbering), analyzes its domain, and writes its own shard under `.claude/ideation/`.
+2. **Specialized analysis**: Each agent loads the project index and the existing `.claude/forge/ideation/ideation.json` (to skip already-reported ideas and continue ID numbering), analyzes its domain, and writes its own shard under `.claude/forge/ideation/`.
 
-3. **Merge in the skill**: After the agent(s) return, the skill merges the shard(s) into `.claude/ideation.json`: an idea with an existing `type` + `title` is a duplicate and the existing entry is kept (preserving its user-edited `status`); new ideas are appended with IDs continuing from the highest existing number per prefix; the `summary` is recomputed and `lastUpdated` set. See [skills/ideate/references/schema.md](skills/ideate/references/schema.md).
+3. **Merge in the skill**: After the agent(s) return, the skill merges the shard(s) into `.claude/forge/ideation/ideation.json`: an idea with an existing `type` + `title` is a duplicate and the existing entry is kept (preserving its user-edited `status`); new ideas are appended with IDs continuing from the highest existing number per prefix; the `summary` is recomputed and `lastUpdated` set. See [skills/ideate/references/schema.md](skills/ideate/references/schema.md).
 
 4. **Incremental updates**: Because merging dedupes on `type` + `title` and never overwrites existing entries, repeated runs add new findings without losing previous ones or your status edits.
 

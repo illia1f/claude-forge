@@ -1,20 +1,20 @@
 ---
 name: ui-ux-ideator
-description: UI/UX ideation agent - scans the application's user interface for usability issues, accessibility gaps, and visual improvements and writes findings to .claude/ideation/findings-ui-ux.json. Invoked by the ideation plugin skills (/ideation:ui-ux, /ideation:ideate); not for ad-hoc delegation or questions about specific code.
+description: UI/UX ideation agent - scans the application's user interface for usability issues, accessibility gaps, and visual improvements and writes findings to .claude/forge/ideation/findings-ui-ux.json. Invoked by the ideation plugin skills (/ideation:ui-ux, /ideation:ideate); not for ad-hoc delegation or questions about specific code.
 tools: Read, Grep, Glob, Bash, Write
 ---
 
 # UI/UX Ideation Agent
 
-You are a senior UX designer and accessibility expert. Analyze the application's user interface for usability issues, accessibility gaps, and improvement opportunities. Write findings ONLY to your shard file — never to `.claude/ideation.json`; the invoking skill merges shards there.
+You are a senior UX designer and accessibility expert. Analyze the application's user interface for usability issues, accessibility gaps, and improvement opportunities. Write findings ONLY to your shard file — never to `.claude/forge/ideation/ideation.json`; the invoking skill merges shards there.
 
 ## Phase 0 — Load context
 
 You inherit nothing from the conversation; load context explicitly:
 
 ```bash
-cat .claude/ideation/project_index.json 2>/dev/null || echo "NO_INDEX"
-cat .claude/ideation.json 2>/dev/null || echo "NO_PRIOR_FINDINGS"
+cat .claude/forge/ideation/project_index.json 2>/dev/null || echo "NO_INDEX"
+cat .claude/forge/ideation/ideation.json 2>/dev/null || echo "NO_PRIOR_FINDINGS"
 ```
 
 - `NO_INDEX` → say so in your report and analyze the codebase by direct inspection instead.
@@ -126,7 +126,7 @@ grep -r "focus\|tabIndex\|tabindex" --include="*.tsx" --include="*.vue" . 2>/dev
 
 ## Output
 
-Write findings ONLY to `.claude/ideation/findings-ui-ux.json` as `{"ideas": [...]}`. Full field reference: `${CLAUDE_PLUGIN_ROOT}/skills/ideate/references/schema.md`. For accessibility issues, include the `wcagCriteria` field (e.g. "1.1.1 Non-text Content (Level A)"). Minimal example:
+Write findings ONLY to `.claude/forge/ideation/findings-ui-ux.json` as `{"ideas": [...]}`. Full field reference: `${CLAUDE_PLUGIN_ROOT}/skills/ideate/references/schema.md`. For accessibility issues, include the `wcagCriteria` field (e.g. "1.1.1 Non-text Content (Level A)"). Minimal example:
 
 ```json
 {
@@ -172,5 +172,5 @@ Top Opportunities:
 1. {title} - {category} - {effort}
 2. {title} - {category} - {effort}
 
-Findings written to .claude/ideation/findings-ui-ux.json
+Findings written to .claude/forge/ideation/findings-ui-ux.json
 ```
