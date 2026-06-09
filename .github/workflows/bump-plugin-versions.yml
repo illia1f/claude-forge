@@ -10,7 +10,10 @@ permissions:
   contents: write
 
 # Serialize runs: parallel bumps would compute versions from stale checkouts
-# and fail each other's push. Queue instead of cancel — every push gets its bump.
+# and fail each other's push. Note GitHub keeps at most one *pending* run per
+# group — when several pushes queue up, the intermediate runs are cancelled, not
+# stacked. That's why the bump step diffs from the last bump commit rather than
+# trusting event.before: a cancelled run's range is folded into the next run.
 # See more: https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency#example-concurrency-groups
 concurrency:
   group: bump-plugin-versions
@@ -29,7 +32,13 @@ jobs:
           node-version: 22
 
       - name: Bump changed plugin versions
-        run: node scripts/bump-plugin-versions.mjs "${{ github.event.before }}" "${{ github.sha }}"
+        run: |
+          # Diff from the last bump commit when one exists: it marks the last state
+          # whose versions are known-good, so the range self-heals across cancelled
+          # queued runs and force pushes. event.before covers the no-bump-yet case.
+          base="$(git log -1 --format=%H --grep='^chore: bump plugin versions' HEAD)"
+          if [ -z "$base" ]; then base="${{ github.event.before }}"; fi
+          node scripts/bump-plugin-versions.mjs "$base" "${{ github.sha }}"
 
       - name: Commit and push version bumps
         run: |
