@@ -70,7 +70,7 @@ First hit wins. A project template outranks generic best practice. This governs 
 1. Ask via the `AskUserQuestion` tool (not free-text):
    - **Q:** "Save this PR description to a file?"
    - **Options:**
-     - `Save` — write to `PR_DESCRIPTION.md` at the repo root (recommended).
+     - `Save` — write to `.claude/forge/git-commands/PR_DESCRIPTION.md`, the plugin's workspace folder (recommended).
      - `Don't save` — leave it on screen only.
-2. On `Save`, write the file with the title as a top-level `# ` heading followed by the body, so the file carries both fields — caveat notes stay on screen, never in the file — then report where it landed (confirm the path first if the user wants a different one).
+2. On `Save`, create `.claude/forge/git-commands/` if needed and write the file with the title as a top-level `# ` heading followed by the body, so the file carries both fields — caveat notes stay on screen, never in the file — then report where it landed (confirm the path first if the user wants a different one).
 3. On `Don't save`, stop — the markdown is already on screen.
