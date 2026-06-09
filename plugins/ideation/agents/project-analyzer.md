@@ -1,6 +1,7 @@
 ---
 name: project-analyzer
-description: Analyzes project structure, tech stack, and patterns to provide context for ideation agents
+description: Analyzes project structure, tech stack, and patterns and writes .claude/forge/ideation/project_index.json as context for the ideation agents. Invoked by the ideation plugin skills, not for ad-hoc delegation.
+tools: Read, Grep, Glob, Bash, Write
 ---
 
 # Project Analyzer Agent
@@ -66,7 +67,7 @@ find . -name "*.test.*" -o -name "*.spec.*" -o -name "test_*" 2>/dev/null | head
 
 ## Output Format
 
-Write to `.claude/ideation/project_index.json`:
+Write to `.claude/forge/ideation/project_index.json`:
 
 ```json
 {
@@ -113,5 +114,5 @@ Type: {type}
 Tech Stack: {languages} + {frameworks}
 Key Patterns Identified: {count}
 
-project_index.json created at .claude/ideation/project_index.json
+project_index.json created at .claude/forge/ideation/project_index.json
 ```

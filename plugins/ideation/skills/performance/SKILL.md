@@ -1,133 +1,34 @@
 ---
 name: performance
-description: Run performance analysis to identify optimization opportunities for speed, memory, and efficiency
+description: Run a whole-codebase performance ideation audit (bundle size, runtime, data fetching, caching, assets) via the performance-ideator agent and merge findings into .claude/forge/ideation/ideation.json. Use when the user invokes /ideation:performance or asks for a broad performance review or optimization ideas for the project. Not for ad-hoc questions about specific code.
 ---
 
-# Performance Ideation Command
+# Performance Ideation
 
-Analyze the codebase for performance bottlenecks, optimization opportunities, and efficiency improvements. This command reviews bundle size, runtime performance, data fetching, caching, and asset loading.
+Spawn the agent, merge its shard, show the results. Categories and analysis details live in the `ideation:performance-ideator` agent; the findings schema and merge rule live in `${CLAUDE_PLUGIN_ROOT}/skills/ideate/references/schema.md`.
 
-## What This Command Does
+## Phase 1 — Project index
 
-1. **Analyzes bundle size** for large dependencies
-2. **Reviews runtime code** for expensive operations
-3. **Checks data fetching** for N+1 and overfetching
-4. **Evaluates caching** strategies
-5. **Generates findings** with expected improvements
+1. Check for the index: `cat .claude/forge/ideation/project_index.json 2>/dev/null`.
+2. Missing → run `mkdir -p .claude/forge/ideation`, then spawn the `ideation:project-analyzer` agent via the Task tool and wait for it to finish.
+3. Stale → if its `analyzedAt` is clearly older than the last significant git activity (compare with `git log -1 --format=%cI`), re-run `ideation:project-analyzer` first.
 
-## Usage
+## Phase 2 — Spawn the agent
 
-```
-/ideation:performance
-```
+Spawn `ideation:performance-ideator` via the Task tool. The subagent sees none of this conversation, so the prompt must spell out context loading and output — use exactly:
 
-## Analysis Scope
+> Read `.claude/forge/ideation/project_index.json` for project context; if it is missing, say so and analyze the codebase by direct inspection. Read `.claude/forge/ideation/ideation.json` and skip any finding whose `type` + `title` already exists there; continue ID numbering from the highest existing `perf-` number. Then run your full performance analysis and write your findings ONLY to `.claude/forge/ideation/findings-performance.json`. Never modify `.claude/forge/ideation/ideation.json`.
 
-### Bundle Size
-- Large dependencies (moment.js, lodash full)
-- Missing tree-shaking
-- Unnecessary polyfills
-- Unoptimized imports
-- Duplicate dependencies
+## Phase 3 — Merge
 
-### Runtime Performance
-- Expensive computations in render paths
-- Missing memoization (useMemo, useCallback)
-- Unnecessary re-renders
-- Inefficient algorithms
-- Memory leaks
+Load `${CLAUDE_PLUGIN_ROOT}/skills/ideate/references/schema.md` and merge `.claude/forge/ideation/findings-performance.json` into `.claude/forge/ideation/ideation.json` following its merge procedure. If the agent failed or wrote no shard, report that and stop — leave `.claude/forge/ideation/ideation.json` untouched.
 
-### Data Fetching
-- N+1 query patterns
-- Missing request batching
-- Overfetching data
-- Missing pagination
-- No request deduplication
+## Phase 4 — Display
 
-### Caching
-- Missing cache layers
-- Cache invalidation issues
-- No HTTP caching headers
-- Missing memoization
+Prefer:
 
-### Asset Loading
-- Unoptimized images
-- Missing lazy loading
-- No code splitting
-- Render-blocking resources
-
-### Database/API
-- Missing indexes
-- Slow queries
-- Unnecessary JOINs
-- Missing connection pooling
-
-## Process
-
-When the user runs this command:
-
-1. **REQUIRED FIRST STEP** - Ensure project index exists:
-   ```bash
-   mkdir -p .claude/ideation
-   ```
-
-   Check if project index exists:
-   ```bash
-   cat .claude/ideation/project_index.json 2>/dev/null
-   ```
-
-   **If the file doesn't exist or the command fails**, you MUST first use the Task tool to run `ideation:project-analyzer` agent to create it. Wait for it to complete before proceeding.
-
-2. Only after project_index.json exists, use the Task tool to run `ideation:performance-ideator` agent.
-
-3. After completion, display performance findings:
-   ```bash
-   cat .claude/ideation.json | grep -A 20 '"type": "performance"'
-   ```
-
-4. Present summary with potential improvements.
-
-## Output Example
-
-```json
-{
-  "id": "perf-001",
-  "type": "performance",
-  "title": "Add memoization to expensive filter",
-  "description": "filterProducts() recalculates on every render",
-  "category": "runtime",
-  "affectedFiles": ["src/components/ProductList.tsx"],
-  "currentPerformance": "Filter runs every render (~50ms)",
-  "expectedImprovement": "Only runs when inputs change",
-  "implementation": "Wrap with useMemo, deps: [products, filters]",
-  "effort": "trivial",
-  "impact": "medium"
-}
+```bash
+jq '[.ideas[] | select(.type=="performance")]' .claude/forge/ideation/ideation.json
 ```
 
-For bundle size issues:
-
-```json
-{
-  "id": "perf-002",
-  "type": "performance",
-  "title": "Replace moment.js with date-fns",
-  "description": "moment.js adds ~300KB to bundle",
-  "category": "bundle_size",
-  "currentSize": "~300KB",
-  "expectedSize": "~10KB (tree-shaken)",
-  "effort": "medium",
-  "impact": "high"
-}
-```
-
-## Categories
-
-| Category | Focus | Metrics |
-|----------|-------|---------|
-| bundle_size | JS/CSS size | KB saved |
-| runtime | Execution speed | ms saved |
-| data_fetching | Network efficiency | Requests reduced |
-| caching | Cache strategy | Cache hit rate |
-| asset_loading | Resource loading | LCP improvement |
-| database | Query performance | Query time |
+If jq is unavailable, read `.claude/forge/ideation/ideation.json` and summarize the `performance` entries directly. Present a short summary with counts by category and the expected improvements.
