@@ -8,7 +8,7 @@ Loaded from Phase 1 (base resolution) or Phase 2 (edge gates) when the repositor
 
 1. Try `main`, then `master` as the base (`git rev-parse --verify <name>` to confirm it exists).
 2. If neither exists, list local branches (`git branch`) and ask the user which branch to diff against.
-3. `origin/HEAD` can also be stale — if the user says the default branch is something else, trust them. Re-point it with `git remote set-head origin -a` only if the user asks; don't do it silently.
+3. `origin/HEAD` can also be stale — if the user says the default branch is something else, trust them. `git remote set-head origin --auto` is a safe, metadata-only write (it only re-points the local `origin/HEAD` symref) — run it, but announce it ("re-pointing origin/HEAD").
 
 ## Detached HEAD
 
@@ -30,4 +30,4 @@ The current branch equals the resolved base (e.g. on `main`). There are no branc
 `git status --porcelain` is non-empty.
 
 - Those changes are **not** part of the commit range and won't appear in the PR until committed.
-- Note this in the generated output (a short line under the summary, or a `<!-- uncommitted: ... -->` marker). Don't block — the user may be drafting the description before the final commit.
+- Hold this as a caveat for Phase 4: printed **after** the body block as a `> Note:` line — never inside the body or the saved file. Don't block — the user may be drafting the description before the final commit.

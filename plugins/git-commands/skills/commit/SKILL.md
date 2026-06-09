@@ -19,6 +19,8 @@ git log --oneline -10
 git branch --show-current
 ```
 
+If `git log` fails (empty repository, no commits yet), load `references/commit-edge-cases.md` ("Empty repository") and continue.
+
 ## Phase 2 — Convention discovery
 
 First hit wins. Tool configs outrank prose docs — a message that violates the commit-msg hook fails whatever the docs say.
@@ -34,7 +36,7 @@ First hit wins. Tool configs outrank prose docs — a message that violates the 
 Run in order. Each gate passes, stops with an explanation, or asks. A user choice at one gate (e.g. "commit anyway" at gate 4) never skips later gates.
 
 1. **Nothing to commit** — if status is empty, report "nothing to commit" and stop.
-2. **Abnormal state** — if `.git/MERGE_HEAD`, `.git/CHERRY_PICK_HEAD`, or `.git/BISECT_LOG` exists, a rebase is in progress, or HEAD is detached, load `references/commit-edge-cases.md` and follow it.
+2. **Abnormal state** — resolve state paths via `git rev-parse --git-path <name>` (literal `.git/<name>` paths break in linked worktrees, where `.git` is a file and state lives under the common dir). If `MERGE_HEAD`, `CHERRY_PICK_HEAD`, or `BISECT_LOG` exists at its resolved path, a rebase is in progress (the `rebase-merge` or `rebase-apply` dir exists at its `--git-path`), or HEAD is detached, load `references/commit-edge-cases.md` and follow it.
 3. **No identity** — if `git config user.name` or `git config user.email` is empty, load `references/commit-edge-cases.md`, show the fix, and stop.
 4. **Protected branch** — on `main` or `master`, ask via the `AskUserQuestion` tool (not free-text); no hard block, the user decides:
    - **Q:** "On `<branch>` — commit here or move to a new branch first?"
@@ -66,8 +68,9 @@ Run in order. Each gate passes, stops with an explanation, or asks. A user choic
 2. Commit (use a here-string/heredoc for multi-line messages).
 3. **Hook modified files** (formatter): re-stage exactly the files that were in the commit, retry once. If files change again, stop and load `references/commit-edge-cases.md`.
 4. **Hook failed**: load `references/commit-edge-cases.md`, show the error, fix the root cause. Never use `--no-verify`.
-5. Verify: run `git log -1 --stat`.
-6. **Summary** — close with a brief recap so the user sees the result at a glance:
+5. **Any other commit failure** (GPG signing, etc.): load `references/commit-edge-cases.md` and follow the matching section.
+6. Verify: run `git log -1 --stat`.
+7. **Summary** — close with a brief recap so the user sees the result at a glance:
 
    ```
    ## Committed

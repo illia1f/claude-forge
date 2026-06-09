@@ -16,8 +16,8 @@ Resolve the base once:
 git symbolic-ref --short refs/remotes/origin/HEAD   # e.g. origin/main -> main
 ```
 1. Strip the remote prefix → `main`.
-2. Missing? Run `git remote set-head origin --auto`, retry.
-3. Still unresolved? Fall back to `main`/`master` (whichever exists). Don't hardcode `main` — the repo may default to `develop`/`trunk`. If you fell back here, treat the base as **assumed** and flag it in Phase 4.
+2. Missing? Run `git remote set-head origin --auto` (a safe, metadata-only write — announce it: "re-pointing origin/HEAD"), retry.
+3. Still unresolved? Load `references/pr-edge-cases.md` ("Base branch can't be resolved"): fall back to `main`/`master` (whichever exists), else list local branches and ask. Don't hardcode `main` — the repo may default to `develop`/`trunk`. If you fell back here, treat the base as **assumed** and flag it in Phase 4.
 
 If a calling skill (e.g. `new-pr`) supplies an already-confirmed base, use it as-is — skip the resolution above and the assumed-base caveat.
 
@@ -34,10 +34,10 @@ Draft from the patch, not just the stat — the stat names the files, the hunks 
 
 Run these **before** discovering conventions or drafting — a gate may stop the whole run, and there's no point formatting a PR that can't exist. Each gate passes, stops with an explanation, or carries a caveat into Phase 4.
 
-1. **No commits vs base** — if `git log <base>..HEAD` is empty, there's nothing to describe; report and stop.
-2. **Detached HEAD** — if `git branch --show-current` is empty, load `references/pr-edge-cases.md`, explain, and stop.
-3. **Still on base branch** — if the current branch equals `<base>`, warn there is no feature branch to describe; confirm the base with the user before continuing.
-4. **Uncommitted changes** — if `git status --porcelain` is non-empty, carry a caveat into Phase 4 (those changes aren't committed and won't be in the PR until they are). Don't block.
+1. **Detached HEAD** — if `git branch --show-current` is empty, load `references/pr-edge-cases.md`, explain, and stop.
+2. **Still on base branch** — if the current branch equals `<base>`, warn there is no feature branch to describe; confirm the base with the user before continuing (see "Still on the base branch" in `references/pr-edge-cases.md`). This must run before the no-commits gate — on the base branch, `<base>..HEAD` is always empty, and this gate gives the better diagnosis.
+3. **No commits vs base** — if `git log <base>..HEAD` is empty, there's nothing to describe; report and stop.
+4. **Uncommitted changes** — if `git status --porcelain` is non-empty, carry a caveat into Phase 4 (those changes aren't committed and won't be in the PR until they are). Don't block. See "Uncommitted changes present" in `references/pr-edge-cases.md`.
 
 ## Phase 3 — Convention discovery
 
@@ -70,7 +70,7 @@ First hit wins. A project template outranks generic best practice. This governs 
 1. Ask via the `AskUserQuestion` tool (not free-text):
    - **Q:** "Save this PR description to a file?"
    - **Options:**
-     - `Save` — write to `PR_DESCRIPTION.md` at the repo root (recommended).
+     - `Save` — write to `.claude/forge/git-commands/PR_DESCRIPTION.md`, the plugin's workspace folder (recommended).
      - `Don't save` — leave it on screen only.
-2. On `Save`, write the file with the title as a top-level `# ` heading followed by the body, so the file carries both fields — caveat notes stay on screen, never in the file — then report where it landed (confirm the path first if the user wants a different one).
+2. On `Save`, create `.claude/forge/git-commands/` if needed and write the file with the title as a top-level `# ` heading followed by the body, so the file carries both fields — caveat notes stay on screen, never in the file — then report where it landed (confirm the path first if the user wants a different one).
 3. On `Don't save`, stop — the markdown is already on screen.
