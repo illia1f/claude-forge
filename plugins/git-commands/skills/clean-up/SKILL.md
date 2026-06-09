@@ -1,6 +1,6 @@
 ---
 name: clean-up
-description: Remove local git branches marked [gone] (their upstream was deleted on the remote) and any worktrees attached to them. Shows a single deletion plan and asks for one confirmation. Skips the current branch, main/master, and genuinely unmerged branches (reported for explicit opt-in). Force-deletes only branches whose content is already in the base (squash/rebase-merged, where -d refuses the orphaned tip). Use when the user asks to clean up gone/stale branches or invokes /clean-up.
+description: Remove local git branches marked [gone] (their upstream was deleted on the remote) and any worktrees attached to them. Shows a single deletion plan and asks for one confirmation. Skips the current branch, main/master, and genuinely unmerged branches (reported for explicit opt-in). Force-deletes only branches whose content is already in the base (squash/rebase-merged). Use when the user asks to clean up gone/stale branches or invokes /clean-up.
 ---
 
 # Clean up gone branches
@@ -20,7 +20,7 @@ Ask before fetching, then act on the answer.
    Why gate: it reaches the network and mutates the list Phase 2 classifies — not a free read.
 
 2. **Act:**
-   - `Fetch & prune` → run `git fetch --prune`.
+   - `Fetch & prune` → pre-check `git remote get-url origin`; then run `git fetch --prune`. No remote, or fetch fails (auth/network)? Continue as if `Skip fetch` was chosen and warn — see "No remote / fetch fails" in `references/gone-detection.md`.
    - `Skip fetch` → continue, warn the list may be stale.
 
 Then gather state (read-only):
@@ -35,10 +35,12 @@ git symbolic-ref --short refs/remotes/origin/HEAD   # default branch -> base for
 **Resolve `<base>` once** — every merge check is relative to it:
 
 1. `git symbolic-ref --short refs/remotes/origin/HEAD` gives e.g. `origin/main`; strip the remote prefix → `main`.
-2. Missing? Run `git remote set-head origin --auto`, retry.
+2. Missing? Run `git remote set-head origin --auto` (a safe, metadata-only write — announce it: "re-pointing origin/HEAD"), retry.
 3. Still unresolved? Fall back to `main`/`master` (whichever exists) and **state the assumed base in the plan**.
 
 Don't hardcode `main` — the repo may default to `develop`/`trunk`, and the wrong base mislabels every branch.
+
+Run the Phase 2 merge/cherry/probe checks against **`origin/<base>`** (just refreshed by the fetch), not local `<base>` — a local base that's behind the remote misreports merged branches as unmerged. Fall back to local `<base>` only when no remote ref exists (`git rev-parse --verify refs/remotes/origin/<base>` fails).
 
 ## Phase 2 — Identify
 
@@ -46,11 +48,11 @@ Load `references/gone-detection.md` for the exact `git branch -vv` parse format 
 
 1. **Gone branches** — `git branch -vv` lines reading `[<upstream>: gone]`.
 2. **Match worktrees** — cross-reference each gone branch against `git worktree list`.
-3. **Classify each branch** — run the ordered checks in gone-detection.md, stopping at the first that proves "merged":
-   - **Merged (reachable)** — listed by `git branch --merged <base>`; tip is an ancestor. Delete with `git branch -d`.
+3. **Classify each branch** — first set aside protected/current (zero git calls), then run the ordered checks in gone-detection.md against `origin/<base>`, stopping at the first that proves "merged":
+   - **Protected / current** — the current branch, `<base>`, or `main`/`master`. Never delete. Classify these **first**, before the expensive cherry/probe checks.
+   - **Merged (reachable)** — listed by `git branch --merged origin/<base>`; tip is an ancestor. Delete with `git branch -d`.
    - **Squash/rebase-merged** — not reachable, but content is provably patch-present in base (per-commit `git cherry` all `-`, or the combined-diff probe in gone-detection.md). The merge orphaned the tip, so `-d` refuses though nothing is lost — the usual reason an upstream goes `[gone]`. Delete with `git branch -D`.
    - **Unmerged** — no check proves content is in base; real work would be lost. Skip and report.
-   - **Protected / current** — the current branch, `<base>`, or `main`/`master`. Never delete.
 
 ## Phase 3 — Build plan
 

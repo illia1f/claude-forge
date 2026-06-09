@@ -31,8 +31,8 @@ Remove local branches marked `[gone]` (their upstream was deleted on the remote)
 
 - Shows a single deletion plan and asks for one confirmation
 - Removes attached worktrees first, then deletes the branches
-- Skips the current branch, `main`/`master`, and branches with unmerged commits (reported for explicit opt-in)
-- Never force-deletes branches or discards dirty worktrees
+- Skips the current branch, `main`/`master`, and genuinely unmerged branches (reported for explicit opt-in)
+- Force-deletes only branches whose content is provably in the base (squash/rebase-merged); never discards dirty worktrees or unmerged work
 
 ## Installation
 

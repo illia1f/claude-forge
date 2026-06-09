@@ -1,14 +1,16 @@
 # Commit Edge Cases
 
-## Mid-merge (`.git/MERGE_HEAD` exists)
+State files live in the repo's git dir — resolve them with `git rev-parse --git-path <name>`, never a literal `.git/<name>` (in linked worktrees `.git` is a file and state lives under the common dir).
+
+## Mid-merge (`MERGE_HEAD` exists — `git rev-parse --git-path MERGE_HEAD`)
 
 Do not create a normal commit. Tell the user they are mid-merge. Options: resolve conflicts, then `git commit` completes the merge (keep the default merge message); or `git merge --abort`.
 
-## Mid-rebase (`.git/rebase-merge/` or `.git/rebase-apply/` exists)
+## Mid-rebase (`rebase-merge/` or `rebase-apply/` dir exists — via `--git-path`)
 
-Stop. Options: resolve conflicts then `git rebase --continue`, or `git rebase --abort`. Note: `.git/rebase-apply/` is also used by `git am` — if `.git/rebase-apply/head-name` is absent, this is likely a `git am` session; offer `git am --abort` instead.
+Stop. Options: resolve conflicts then `git rebase --continue`, or `git rebase --abort`. Note: `rebase-apply/` is also used by `git am` — if `rebase-apply/head-name` is absent, this is likely a `git am` session; offer `git am --abort` instead.
 
-## Mid-cherry-pick (`.git/CHERRY_PICK_HEAD` exists) / mid-bisect (`.git/BISECT_LOG` exists)
+## Mid-cherry-pick (`CHERRY_PICK_HEAD` exists) / mid-bisect (`BISECT_LOG` exists)
 
 Cherry-pick: stop; resolve conflicts then `git cherry-pick --continue`, or `git cherry-pick --abort`. Bisect: a commit is rarely what the user wants mid-bisect — suggest `git stash` for temporary changes, or finish with `git bisect reset` first.
 
