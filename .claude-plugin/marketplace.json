@@ -9,7 +9,7 @@
       "name": "ideation",
       "source": "./plugins/ideation",
       "description": "Multi-agent codebase ideation framework. Analyzes projects for improvements across security, UI/UX, performance, code quality, documentation, and code patterns.",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": {
         "name": "illia1f"
       },
@@ -27,7 +27,7 @@
       "name": "git-commands",
       "source": "./plugins/git-commands",
       "description": "Git workflow skills: create commits following project rules or Conventional Commits, generate PR descriptions, and clean up gone branches and their worktrees — with safety gates throughout.",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "author": {
         "name": "illia1f"
       },
@@ -46,7 +46,7 @@
       "name": "gh-commands",
       "source": "./plugins/gh-commands",
       "description": "GitHub workflow skills via the gh CLI. Opens a pull request end to end — committing and drafting through git-commands, then gh pr create — with preflight, adaptive state detection, and a confirmation gate.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "illia1f"
       },

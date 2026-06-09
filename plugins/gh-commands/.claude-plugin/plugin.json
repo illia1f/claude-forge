@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "gh-commands",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "GitHub workflow skills via the gh CLI. Opens a pull request end to end — committing and drafting through git-commands, then gh pr create — with preflight, adaptive state detection, and a confirmation gate.",
   "author": {
     "name": "illia1f"
