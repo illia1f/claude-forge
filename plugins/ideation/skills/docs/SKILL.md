@@ -1,136 +1,34 @@
 ---
 name: docs
-description: Run documentation analysis to identify missing, outdated, or unclear documentation
+description: Run a whole-project documentation ideation audit (README, API docs, docstrings, architecture docs, guides, changelog) via the documentation-ideator agent and merge findings into .claude/ideation.json. Use when the user invokes /ideation:docs or asks for a broad documentation gap review of the project. Not for ad-hoc questions about specific code.
 ---
 
-# Documentation Ideation Command
+# Documentation Ideation
 
-Analyze the codebase for documentation gaps, outdated content, and improvement opportunities. This command reviews README, API docs, code comments, architecture documentation, and guides.
+Spawn the agent, merge its shard, show the results. Categories and analysis details live in the `ideation:documentation-ideator` agent; the findings schema and merge rule live in `${CLAUDE_PLUGIN_ROOT}/skills/ideate/references/schema.md`.
 
-## What This Command Does
+## Phase 1 — Project index
 
-1. **Reviews README** for completeness
-2. **Checks API documentation** for coverage
-3. **Analyzes code comments** and docstrings
-4. **Looks for architecture docs**
-5. **Identifies missing guides** and tutorials
-6. **Checks changelog** and versioning
+1. Check for the index: `cat .claude/ideation/project_index.json 2>/dev/null`.
+2. Missing → run `mkdir -p .claude/ideation`, then spawn the `ideation:project-analyzer` agent via the Task tool and wait for it to finish.
+3. Stale → if its `analyzedAt` is clearly older than the last significant git activity (compare with `git log -1 --format=%cI`), re-run `ideation:project-analyzer` first.
 
-## Usage
+## Phase 2 — Spawn the agent
 
-```
-/ideation:docs
-```
+Spawn `ideation:documentation-ideator` via the Task tool. The subagent sees none of this conversation, so the prompt must spell out context loading and output — use exactly:
 
-## Analysis Scope
+> Read `.claude/ideation/project_index.json` for project context; if it is missing, say so and analyze the codebase by direct inspection. Read `.claude/ideation.json` and skip any finding whose `type` + `title` already exists there; continue ID numbering from the highest existing `doc-` number. Then run your full documentation analysis and write your findings ONLY to `.claude/ideation/findings-documentation.json`. Never modify `.claude/ideation.json`.
 
-### README & Getting Started
-- Installation instructions
-- Setup steps
-- Prerequisites
-- Quick start guide
-- Troubleshooting section
+## Phase 3 — Merge
 
-### API Documentation
-- Endpoint coverage
-- Request/response examples
-- Parameter descriptions
-- Error documentation
-- Authentication docs
+Load `${CLAUDE_PLUGIN_ROOT}/skills/ideate/references/schema.md` and merge `.claude/ideation/findings-documentation.json` into `.claude/ideation.json` following its merge procedure. If the agent failed or wrote no shard, report that and stop — leave `.claude/ideation.json` untouched.
 
-### Code Documentation
-- Function docstrings/JSDoc
-- Parameter descriptions
-- Return value documentation
-- Usage examples
-- Inline comments
+## Phase 4 — Display
 
-### Architecture Docs
-- System overview
-- Component diagrams
-- Data flow documentation
-- Decision records (ADRs)
-- Folder structure explanation
+Prefer:
 
-### Guides & Tutorials
-- How-to guides
-- Contribution guidelines
-- Deployment docs
-- Migration guides
-- Onboarding docs
-
-### Changelog & Versioning
-- CHANGELOG file
-- Version documentation
-- Breaking change notes
-- Deprecation notices
-
-## Process
-
-When the user runs this command:
-
-1. **REQUIRED FIRST STEP** - Ensure project index exists:
-   ```bash
-   mkdir -p .claude/ideation
-   ```
-
-   Check if project index exists:
-   ```bash
-   cat .claude/ideation/project_index.json 2>/dev/null
-   ```
-
-   **If the file doesn't exist or the command fails**, you MUST first use the Task tool to run `ideation:project-analyzer` agent to create it. Wait for it to complete before proceeding.
-
-2. Only after project_index.json exists, use the Task tool to run `ideation:documentation-ideator` agent.
-
-3. After completion, display documentation findings:
-   ```bash
-   cat .claude/ideation.json | grep -A 20 '"type": "documentation"'
-   ```
-
-4. Present summary by category and audience.
-
-## Output Example
-
-```json
-{
-  "id": "doc-001",
-  "type": "documentation",
-  "title": "Add API authentication documentation",
-  "description": "API has auth endpoints but no documentation",
-  "category": "api",
-  "affectedFiles": ["docs/api.md", "src/routes/auth.ts"],
-  "currentState": "No authentication docs exist",
-  "proposedContent": "Create auth guide: login flow, tokens, errors",
-  "audience": "API consumers, frontend developers",
-  "effort": "small",
-  "impact": "high"
-}
+```bash
+jq '[.ideas[] | select(.type=="documentation")]' .claude/ideation.json
 ```
 
-For code documentation:
-
-```json
-{
-  "id": "doc-002",
-  "type": "documentation",
-  "title": "Add JSDoc to utility functions",
-  "description": "23 exported utils, only 4 have JSDoc",
-  "category": "code",
-  "affectedFiles": ["src/utils/format.ts", "src/utils/validate.ts"],
-  "proposedContent": "Add @param, @returns, @example to exports",
-  "effort": "medium",
-  "impact": "medium"
-}
-```
-
-## Categories
-
-| Category | Focus | Audience |
-|----------|-------|----------|
-| readme | Project intro | New users |
-| api | API reference | API consumers |
-| code | Inline docs | Developers |
-| architecture | System design | Team members |
-| guides | How-to content | Various |
-| changelog | Version history | Upgraders |
+If jq is unavailable, read `.claude/ideation.json` and summarize the `documentation` entries directly. Present a short summary with counts by category and audience.

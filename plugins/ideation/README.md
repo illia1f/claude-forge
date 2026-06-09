@@ -30,7 +30,7 @@ claude --plugin-dir ./plugins/ideation
 /ideation:ideate
 ```
 
-Runs all 6 specialized agents in parallel and merges results into `.claude/ideation.json`.
+Runs the domain agents in parallel (skipping UI/UX for projects without a UI) and merges their findings into `.claude/ideation.json`.
 
 ### Individual Analysis Commands
 
@@ -45,11 +45,10 @@ Runs all 6 specialized agents in parallel and merges results into `.claude/ideat
 
 ## Output
 
-All findings are saved to `.claude/ideation.json`:
+All findings end up in `.claude/ideation.json`. Full field reference: [skills/ideate/references/schema.md](skills/ideate/references/schema.md).
 
 ```json
 {
-  "project": "my-project",
   "lastUpdated": "2026-01-16T12:00:00Z",
   "ideas": [
     {
@@ -60,7 +59,8 @@ All findings are saved to `.claude/ideation.json`:
       "severity": "critical",
       "effort": "small",
       "impact": "high",
-      "status": "new"
+      "status": "new",
+      "createdAt": "2026-01-16T12:00:00Z"
     }
   ],
   "summary": {
@@ -72,7 +72,9 @@ All findings are saved to `.claude/ideation.json`:
       "code_quality": 6,
       "documentation": 3,
       "code_improvements": 3
-    }
+    },
+    "byEffort": { "trivial": 4, "small": 8, "medium": 7, "large": 4, "complex": 1 },
+    "byImpact": { "low": 3, "medium": 12, "high": 9 }
   }
 }
 ```
@@ -141,12 +143,11 @@ Effort levels: trivial, small, medium, large, complex
 
 ## Agents
 
-The plugin includes 8 specialized agents:
+The plugin includes 7 specialized agents:
 
 | Agent                       | Purpose                                            |
 | --------------------------- | -------------------------------------------------- |
 | `project-analyzer`          | Creates project index with tech stack and patterns |
-| `ideation-orchestrator`     | Coordinates all agents for full analysis           |
 | `security-ideator`          | Security vulnerability analysis                    |
 | `ui-ux-ideator`             | UI/UX improvement analysis                         |
 | `performance-ideator`       | Performance optimization analysis                  |
@@ -154,15 +155,17 @@ The plugin includes 8 specialized agents:
 | `documentation-ideator`     | Documentation gap analysis                         |
 | `code-improvements-ideator` | Code-revealed opportunities                        |
 
+Agents are invoked by the plugin skills, not directly. Each ideator writes its findings to its own shard file (`.claude/ideation/findings-<type>.json`) — never to the shared `.claude/ideation.json` — so parallel agents can't overwrite each other's results.
+
 ## How It Works
 
-1. **Project Analysis**: First run creates `.claude/ideation/project_index.json` with project structure, tech stack, and patterns.
+1. **Project analysis**: The invoking skill ensures `.claude/ideation/project_index.json` exists (and re-runs `project-analyzer` when it's stale), so agents have project structure, tech stack, and patterns to work from.
 
-2. **Specialized Analysis**: Each agent analyzes its domain using targeted searches, pattern matching, and code inspection.
+2. **Specialized analysis**: Each agent loads the project index and the existing `.claude/ideation.json` (to skip already-reported ideas and continue ID numbering), analyzes its domain, and writes its own shard under `.claude/ideation/`.
 
-3. **Result Merging**: Findings are merged into `.claude/ideation.json`, preserving history and avoiding duplicates.
+3. **Merge in the skill**: After the agent(s) return, the skill merges the shard(s) into `.claude/ideation.json`: an idea with an existing `type` + `title` is a duplicate and the existing entry is kept (preserving its user-edited `status`); new ideas are appended with IDs continuing from the highest existing number per prefix; the `summary` is recomputed and `lastUpdated` set. See [skills/ideate/references/schema.md](skills/ideate/references/schema.md).
 
-4. **Incremental Updates**: Subsequent runs add new findings without losing previous ones.
+4. **Incremental updates**: Because merging dedupes on `type` + `title` and never overwrites existing entries, repeated runs add new findings without losing previous ones or your status edits.
 
 ## Best Practices
 
@@ -177,14 +180,16 @@ The plugin includes 8 specialized agents:
 ```
 .claude/
 ├── ideation/
-│   └── project_index.json    # Project structure analysis
-└── ideation.json             # All ideation findings
+│   ├── project_index.json        # Project structure analysis
+│   └── findings-<type>.json      # Per-agent shards (transient, deleted after merge)
+└── ideation.json                 # All ideation findings (merged)
 ```
 
 ## Requirements
 
 - Claude Code CLI
 - Project with recognizable structure (has package.json, requirements.txt, etc.)
+- `jq` recommended for displaying/merging results (optional — skills fall back to reading the JSON directly)
 
 ## License
 

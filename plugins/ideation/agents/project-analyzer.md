@@ -1,6 +1,7 @@
 ---
 name: project-analyzer
-description: Analyzes project structure, tech stack, and patterns to provide context for ideation agents
+description: Analyzes project structure, tech stack, and patterns and writes .claude/ideation/project_index.json as context for the ideation agents. Invoked by the ideation plugin skills, not for ad-hoc delegation.
+tools: Read, Grep, Glob, Bash, Write
 ---
 
 # Project Analyzer Agent
