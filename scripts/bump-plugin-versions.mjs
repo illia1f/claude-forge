@@ -47,10 +47,16 @@ head = resolveCommit(head) ?? fail(`headRef does not resolve to a commit: ${head
 
 // First push to a branch reports an all-zero "before" SHA — fall back to the parent
 // commit, or to the empty tree when head is the initial commit and has no parent.
+// A non-zero base that doesn't resolve (force push whose old head is gone) gets the
+// same fallback: a too-narrow range beats a red run.
 if (EMPTY_SHA.test(base)) {
   base = resolveCommit(`${head}~1`) ?? EMPTY_TREE;
 } else {
-  base = resolveCommit(base) ?? fail(`baseRef does not resolve to a commit: ${base}`);
+  const resolved = resolveCommit(base);
+  if (resolved === null) {
+    console.warn(`warning: baseRef does not resolve (force push?): ${base}; using ${head}~1`);
+  }
+  base = resolved ?? resolveCommit(`${head}~1`) ?? EMPTY_TREE;
 }
 
 // Version recorded at the base ref, or null when the plugin is new in this range.
@@ -134,6 +140,20 @@ const marketplacePath = ".claude-plugin/marketplace.json";
 const marketplace = readJson(marketplacePath);
 let marketplaceTouched = false;
 
+// plugin.json wins at runtime, so a missing/stale entry is drift, not breakage —
+// flag it loudly and keep the entry in lockstep otherwise.
+function syncMarketplaceEntry(name, version) {
+  const entry = marketplace.plugins?.find((p) => p.name === name);
+  if (!entry) {
+    console.warn(`warning: ${name} has no entry in ${marketplacePath}; only plugin.json updated`);
+    return;
+  }
+  if (entry.version !== version) {
+    entry.version = version;
+    marketplaceTouched = true;
+  }
+}
+
 for (const name of changedPlugins) {
   const manifestPath = `plugins/${name}/.claude-plugin/plugin.json`;
   const manifest = readJson(manifestPath);
@@ -149,15 +169,12 @@ for (const name of changedPlugins) {
   const baseVersion = versionAtBase(name);
   if (baseVersion === null) {
     console.log(`${name}: new plugin, keeping authored version ${current}`);
+    syncMarketplaceEntry(name, current);
     continue;
   }
   if (baseVersion !== current) {
     console.log(`${name}: version set manually ${baseVersion} -> ${current}, not bumping`);
-    const entry = marketplace.plugins?.find((p) => p.name === name);
-    if (entry && entry.version !== current) {
-      entry.version = current;
-      marketplaceTouched = true;
-    }
+    syncMarketplaceEntry(name, current);
     continue;
   }
 
@@ -176,14 +193,7 @@ for (const name of changedPlugins) {
   manifest.version = next;
   if (!dryRun) writeJson(manifestPath, manifest);
 
-  const entry = marketplace.plugins?.find((p) => p.name === name);
-  if (entry) {
-    entry.version = next;
-    marketplaceTouched = true;
-  } else {
-    // plugin.json wins at runtime, so this is drift, not breakage — flag it loudly.
-    console.warn(`warning: ${name} has no entry in ${marketplacePath}; only plugin.json updated`);
-  }
+  syncMarketplaceEntry(name, next);
 
   console.log(`${name}: ${type} bump ${current} -> ${next}${dryRun ? " (dry run)" : ""}`);
 }

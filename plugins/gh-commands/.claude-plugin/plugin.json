@@ -7,5 +7,12 @@
     "name": "illia1f"
   },
   "license": "MIT",
-  "keywords": ["github", "gh", "pull-request", "pr", "workflow"]
+  "repository": "https://github.com/illia1f/claude-forge",
+  "keywords": [
+    "github",
+    "gh",
+    "pull-request",
+    "pr",
+    "workflow"
+  ]
 }

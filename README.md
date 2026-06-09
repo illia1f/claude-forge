@@ -22,6 +22,10 @@ Multi-agent codebase ideation framework. Analyzes projects for improvements acro
 
 Git workflow skills: create commits (project rules or Conventional Commits), generate PR descriptions, and clean up gone branches and their worktrees.
 
+### [gh-commands](./plugins/gh-commands)
+
+GitHub workflow skills via the [gh](https://cli.github.com/) CLI: open a pull request end to end (`/new-pr`). Pairs with git-commands for the commit and PR description; degrades gracefully without it.
+
 ## Disclaimer
 
 This is an unofficial, personal collection - not affiliated with Anthropic.
