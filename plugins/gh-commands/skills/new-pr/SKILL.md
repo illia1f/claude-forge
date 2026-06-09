@@ -87,9 +87,9 @@ Everything before this point was local. The push and the PR creation are the out
 1. Show the exact commands that will run:
    ```
    git push -u origin <branch>        # only if the branch is unpushed or has new commits
-   gh pr create --base <base> --head <branch> --title <title> --body-file <tempfile> [--draft]
+   gh pr create --base <base> --head <branch> --title <title> --body-file .claude/forge/gh-commands/pr-body.md [--draft]
    ```
-   The body goes in a temp file (`--body-file`) so multi-line markdown survives intact. "Unpushed or has new commits" = the branch has no upstream (`git rev-parse --abbrev-ref <branch>@{upstream}` fails) or `git log origin/<branch>..HEAD` is non-empty. Fork flow: use the `--repo <upstream> --head <owner>:<branch>` form from `references/gh-edge-cases.md`.
+   Write the body to `.claude/forge/gh-commands/pr-body.md` (the plugin's workspace folder — create it if needed) and pass it via `--body-file` so multi-line markdown survives intact. "Unpushed or has new commits" = the branch has no upstream (`git rev-parse --abbrev-ref <branch>@{upstream}` fails) or `git log origin/<branch>..HEAD` is non-empty. Fork flow: use the `--repo <upstream> --head <owner>:<branch>` form from `references/gh-edge-cases.md`.
 2. **Confirm before running** via the `AskUserQuestion` tool (not free-text) — this is the only outward-facing step; it publishes commits and opens a PR others can see. If `<base>` is **not** the repo's default branch, call that out in the question — an unusual target deserves a second look (`references/gh-edge-cases.md`). (Targeting the default branch is the normal case; don't warn about it.)
    - **Q:** "Push `<branch>` and open this PR against `<base>`?"
    - **Options:**
