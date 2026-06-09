@@ -19,6 +19,8 @@ git symbolic-ref --short refs/remotes/origin/HEAD   # e.g. origin/main -> main
 2. Missing? Run `git remote set-head origin --auto`, retry.
 3. Still unresolved? Fall back to `main`/`master` (whichever exists). Don't hardcode `main` — the repo may default to `develop`/`trunk`. If you fell back here, treat the base as **assumed** and flag it in Phase 4.
 
+If a calling skill (e.g. `new-pr`) supplies an already-confirmed base, use it as-is — skip the resolution above and the assumed-base caveat.
+
 Then run in parallel (read-only):
 ```
 git branch --show-current
@@ -50,7 +52,7 @@ First hit wins. A project template outranks generic best practice. This governs 
 1. Draft the **title** and **body**:
    - **Title** — one imperative line, no trailing period, aim for ≤70 characters. If the `git log` subjects follow Conventional Commits (`type(scope): subject`), match that style; otherwise write a concise summary of what the branch does. A PR template never contains the title — always generate it here.
    - **Body** — from the diff **and the conversation context**: the diff shows what changed, the conversation shows why. Format per the Phase 3 convention, then apply the terse style on top. If the conversation gives no "why", describe only what changed — never invent motivation, test results, or linked issues. Leave a clearly marked placeholder (e.g. `<!-- TODO: link issue -->`) when the convention asks for something you can't determine.
-   - **Caveats** — if the base was assumed (Phase 1 step 3) or there are uncommitted changes (Phase 2 gate 4), note each as a short line in the body: a Notes section if the convention has one, otherwise directly under the summary. Skip when neither applies.
+   - **Caveats** — if the base was assumed (Phase 1 step 3) or there are uncommitted changes (Phase 2 gate 4), hold each as a short note for step 2 — **never inside the body**: these are session notes for the author, and a body pasted or piped to GitHub would publish them to reviewers. Skip when neither applies.
 
    **Precedence** — the Phase 3 convention wins on any conflict: required sections, checkboxes, headings, length caps. The terse style governs verbosity, not format — it never drops a section the convention requires.
 
@@ -61,6 +63,7 @@ First hit wins. A project template outranks generic best practice. This governs 
 2. Display the title and body as **two separate, clearly-labeled parts** — GitHub treats them as distinct fields, so don't merge them into one block where the title reads as body:
    - First print the title on its own line, labeled, e.g. `**Title:** feat(upload): add retry to the upload client`.
    - Then print the body in its own fenced block so the user can copy it verbatim into the description field.
+   - After the body block, print any step 1 caveats as separate `> Note:` lines — outside the fence, so they never travel with the copied body.
 
 ## Phase 5 — Offer save
 
@@ -69,5 +72,5 @@ First hit wins. A project template outranks generic best practice. This governs 
    - **Options:**
      - `Save` — write to `PR_DESCRIPTION.md` at the repo root (recommended).
      - `Don't save` — leave it on screen only.
-2. On `Save`, write the file with the title as a top-level `# ` heading followed by the body, so the file carries both fields, then report where it landed (confirm the path first if the user wants a different one).
+2. On `Save`, write the file with the title as a top-level `# ` heading followed by the body, so the file carries both fields — caveat notes stay on screen, never in the file — then report where it landed (confirm the path first if the user wants a different one).
 3. On `Don't save`, stop — the markdown is already on screen.

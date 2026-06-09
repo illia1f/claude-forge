@@ -41,6 +41,24 @@
       ],
       "license": "MIT",
       "repository": "https://github.com/illia1f/claude-forge"
+    },
+    {
+      "name": "gh-commands",
+      "source": "./plugins/gh-commands",
+      "description": "GitHub workflow skills via the gh CLI. Opens a pull request end to end — reusing git-commands (recommended companion) for the commit and PR description, then gh pr create — with preflight, adaptive state detection, and a confirmation gate.",
+      "version": "1.0.0",
+      "author": {
+        "name": "illia1f"
+      },
+      "keywords": [
+        "github",
+        "gh",
+        "pull-request",
+        "pr",
+        "workflow"
+      ],
+      "license": "MIT",
+      "repository": "https://github.com/illia1f/claude-forge"
     }
   ]
 }
