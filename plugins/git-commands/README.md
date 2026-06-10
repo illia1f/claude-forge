@@ -25,6 +25,35 @@ Generate a pull request title and description from the commits on the current br
 - Prints the markdown to the screen and offers to save it to a `.md` file
 - Does not open the PR — it produces the text only
 
+### /sync
+
+Update the current branch with its base branch — or any branch you name.
+
+- Auto-detects the base branch (`origin/HEAD`, falling back to `main`/`master`); `/sync <branch>` syncs with that branch instead
+- Conflict-driven strategy: tries a clean rebase first (linear history); falls back to a single merge when the rebase conflicts, so conflicts are resolved once — not per replayed commit
+- Branches that already contain merge commits go straight to merge (rebasing would flatten them)
+- Assists conflict resolution: analyzes each conflicted file, proposes resolutions, applies them only after your approval
+- Asks before fetching, before stashing a dirty tree (restored afterwards), and before pushing — `--force-with-lease` after a rebase, never plain `--force`
+- Hard-stops when your branch's own upstream has commits you don't have locally — the one case where a force-push would silently overwrite a teammate's work
+
+**When to use it:**
+
+- Your PR shows *"This branch is out-of-date with the base branch"* or has conflicts with base
+- A teammate merged something to `main` that you need underneath your feature branch
+- A long-running branch has drifted and you want it current before continuing work
+- Right before `/gen-pr` or `/new-pr`, so the PR diff is against the latest base
+- You work against a non-default base (e.g. a release or develop branch): `/sync develop`
+
+**How to use it:**
+
+```bash
+/sync            # sync with the auto-detected base (usually origin/main)
+/sync develop    # sync with develop instead
+/sync release/2.4
+```
+
+A typical run: confirm the fetch → review one plan (target, ahead/behind, strategy, files to stash) → confirm once → get a sync report — then optionally push.
+
 ### /clean-up
 
 Remove local branches marked `[gone]` (their upstream was deleted on the remote) and any worktrees attached to them.
