@@ -20,7 +20,7 @@ Multi-agent codebase ideation framework. Analyzes projects for improvements acro
 
 ### [git-commands](./plugins/git-commands)
 
-Git workflow skills: create commits (project rules or Conventional Commits), generate PR descriptions, and clean up gone branches and their worktrees.
+Git workflow skills: create commits (project rules or Conventional Commits), generate PR descriptions, sync the current branch with its base (rebase when clean, merge otherwise), and clean up gone branches and their worktrees.
 
 ### [gh-commands](./plugins/gh-commands)
 
