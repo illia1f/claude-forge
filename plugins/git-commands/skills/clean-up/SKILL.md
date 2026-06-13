@@ -54,7 +54,7 @@ Load `references/gone-detection.md` for the exact `git branch -vv` parse format 
    - **Squash/rebase-merged** — not reachable, but content is provably patch-present in base (per-commit `git cherry` all `-`, or the combined-diff probe in gone-detection.md). The merge orphaned the tip, so `-d` refuses though nothing is lost — the usual reason an upstream goes `[gone]`. Delete with `git branch -D`.
    - **Unmerged** — no check proves content is in base; real work would be lost. Skip and report.
 
-## Phase 3 — Build plan
+## Phase 3 — Build and show plan
 
 Assemble one plan, two separated parts:
 
@@ -65,13 +65,15 @@ Assemble one plan, two separated parts:
 
 Never put the current branch or `<base>`/`main`/`master` in the delete list, even if marked gone.
 
+Render the plan as text and stop — the Phase 4 gate has no body, so the plan must be on screen before it; don't batch the plan and the gate into one turn.
+
 ## Phase 4 — Confirm once
 
 Nothing safe to delete? Report and stop — don't ask.
 
-Otherwise show the full Phase 3 plan, then ask **one** confirmation via the `AskUserQuestion` tool (this is the destructive step — gate stronger, not weaker):
+The Phase 3 plan is already on screen. Ask **one** confirmation via the `AskUserQuestion` tool (this is the destructive step — gate stronger, not weaker):
 
-- **Q:** "Proceed with the deletions above?" (plan shown in the preceding message)
+- **Q:** "Proceed with the deletions above?"
 - **Options:**
   - `Delete` — remove the listed branches and worktrees (recommended).
   - `Cancel` — make no changes.
