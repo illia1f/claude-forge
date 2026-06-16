@@ -65,7 +65,7 @@ Run in order. Each gate passes, stops with an explanation, or asks. A user choic
    - **Always include a body** for breaking changes, security fixes, data migrations, and reverts — never subject-only; future debuggers need the context.
    - **Never include:** "this commit does X"; `I`/`we`/`now`/`currently` (the diff says what); emoji unless the project requires it; restating the filename when the scope already covers it.
 
-2. Commit (use a here-string/heredoc for multi-line messages).
+2. Commit from a message file, never inline through a shell: write the message to a temp file in `.claude/forge/git-commands/` (Write tool; gitignored), `git commit -F <tmp>`, then delete it. `-F` reads the file verbatim — no shell parsing the message as heredoc/here-string or expanding `$`/backticks/quotes.
 3. **Hook modified files** (formatter): re-stage exactly the files that were in the commit, retry once. If files change again, stop and load `references/commit-edge-cases.md`.
 4. **Hook failed**: load `references/commit-edge-cases.md`, show the error, fix the root cause. Never use `--no-verify`.
 5. **Any other commit failure** (GPG signing, etc.): load `references/commit-edge-cases.md` and follow the matching section.
