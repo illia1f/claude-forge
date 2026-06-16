@@ -27,7 +27,7 @@
       "name": "git-commands",
       "source": "./plugins/git-commands",
       "description": "Git workflow skills: create commits following project rules or Conventional Commits, generate PR descriptions, sync the current branch with its base (rebase when clean, merge otherwise), and clean up gone branches and their worktrees — with safety gates throughout.",
-      "version": "1.5.1",
+      "version": "1.5.2",
       "author": {
         "name": "illia1f"
       },

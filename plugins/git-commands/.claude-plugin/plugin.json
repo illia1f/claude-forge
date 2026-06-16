@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "git-commands",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Git workflow skills: create commits following project rules or Conventional Commits, generate PR descriptions, sync the current branch with its base (rebase when clean, merge otherwise), and clean up gone branches and their worktrees — with safety gates throughout.",
   "author": {
     "name": "illia1f"
