@@ -54,8 +54,11 @@ All findings end up in `.claude/forge/ideation/ideation.json`. Full field refere
     {
       "id": "sec-001",
       "type": "security",
-      "title": "Fix SQL injection vulnerability",
-      "description": "...",
+      "title": "Fix SQL injection in user search",
+      "description": "searchUsers() builds SQL via string concatenation with user input",
+      "rationale": "Unsanitized input lets an attacker read or modify arbitrary rows",
+      "category": "input_validation",
+      "affectedFiles": ["src/api/users.ts"],
       "severity": "critical",
       "effort": "small",
       "impact": "high",
@@ -178,11 +181,10 @@ Agents are invoked by the plugin skills, not directly. Each ideator writes its f
 ## File Structure
 
 ```
-.claude/
-├── ideation/
-│   ├── project_index.json        # Project structure analysis
-│   └── findings-<type>.json      # Per-agent shards (transient, deleted after merge)
-└── ideation.json                 # All ideation findings (merged)
+.claude/forge/ideation/
+├── project_index.json        # Project structure analysis
+├── ideation.json             # All ideation findings (merged)
+└── findings-<type>.json      # Per-agent shards (transient, deleted after merge)
 ```
 
 ## Requirements

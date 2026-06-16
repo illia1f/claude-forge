@@ -16,11 +16,11 @@ A personal collection of handy plugins for Claude Code.
 
 ### [ideation](./plugins/ideation)
 
-Multi-agent codebase ideation framework. Analyzes projects for improvements across security, UI/UX, performance, code quality, documentation, and code patterns.
+Multi-agent codebase ideation framework. Analyzes projects for improvements across security, UI/UX, performance, code quality, documentation, and code patterns — run every domain at once with `/ideation:ideate`, or one at a time (e.g. `/ideation:security`).
 
 ### [git-commands](./plugins/git-commands)
 
-Git workflow skills: create commits (project rules or Conventional Commits), generate PR descriptions, sync the current branch with its base (rebase when clean, merge otherwise), and clean up gone branches and their worktrees.
+Git workflow skills: create commits following project rules or Conventional Commits (`/commit`), generate PR descriptions (`/gen-pr`), sync the current branch with its base — rebasing when clean, merging otherwise (`/sync`), and clean up gone branches and their worktrees (`/clean-up`).
 
 ### [gh-commands](./plugins/gh-commands)
 
@@ -29,3 +29,7 @@ GitHub workflow skills via the [gh](https://cli.github.com/) CLI: open a pull re
 ## Disclaimer
 
 This is an unofficial, personal collection - not affiliated with Anthropic.
+
+## License
+
+[MIT](./LICENSE)
